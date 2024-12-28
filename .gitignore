@@ -1,0 +1,11 @@
+# Editors
+.vs/
+.vscode/
+.idea/
+
+# Cache
+cmake-build-debug/
+cmake-build-release/
+
+# Dependencies
+deps/
