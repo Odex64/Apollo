@@ -5,6 +5,7 @@ module;
 export module Demo;
 
 import IState;
+import BaseMoon;
 import BasePlanet;
 import BaseStar;
 import SpaceCamera;
@@ -13,8 +14,9 @@ export class Demo final : public IState {
 private:
     BasePlanet _planet{0.5f, BLUE, 5.0f, 1.0f, 0.0f};
     BaseStar _star{1.0f, YELLOW};
+    BaseMoon _moon{0.2f, GRAY, 1.2f, 5.f, 0.0f};
 
-    SpaceCamera _camera{_planet.Position};
+    SpaceCamera _camera{_moon.Position};
 
     float _cameraZoomMin = 5.0f;
     float _cameraZoomMax = 30.0f;
@@ -45,7 +47,12 @@ public:
         _camera.Update(ms);
 
         _planet.Update(ms);
+        _moon.SetOrbitPathCenter(_planet.Position);
+        _moon.Update(ms);
         _star.Update(ms);
+
+
+
     }
 
     void Draw() noexcept override
@@ -58,6 +65,7 @@ public:
 
         _planet.Draw();
         _star.Draw();
+        _moon.Draw();
 
         _camera.End();
         EndDrawing();
