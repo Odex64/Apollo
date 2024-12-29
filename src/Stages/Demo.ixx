@@ -4,28 +4,35 @@ module;
 
 export module Demo;
 
+import std;
 import IState;
 import BaseMoon;
+import BaseGalaxy;
 import BasePlanet;
 import BaseStar;
 import SpaceCamera;
+import BaseSpace;
 
 export class Demo final : public IState {
 private:
-    BasePlanet _planet{0.5f, BLUE, 5.0f, 1.0f, 0.0f};
-    BaseStar _star{1.0f, YELLOW};
-    BaseMoon _moon{0.2f, GRAY, 1.2f, 5.f, 0.0f};
+    BaseGalaxy _galaxy{};
+    // std::vector<BaseSpace> _stars{};
 
-    SpaceCamera _camera{_moon.Position};
-
-    float _cameraZoomMin = 5.0f;
-    float _cameraZoomMax = 30.0f;
-    Vector3 _cameraPosMin = {-50.0f, 1.0f, -50.0f};
-    Vector3 _cameraPosMax = {50.0f, 50.0f, 50.0f};
+    std::shared_ptr<SpaceCamera> _camera{nullptr};
 
 public:
     // Constructor
-    Demo() noexcept = default;
+    Demo() noexcept
+    {
+        const auto& star{_galaxy.AddStar(std::make_unique<BaseStar>(1.0f, YELLOW))};
+        _camera = std::make_shared<SpaceCamera>(star->Position);
+
+        const auto& planet{star->AddPlanet(std::make_unique<BasePlanet>(0.3f, BLUE, 6.0f, 1.0f, 0.0f))};
+        planet->AddMoon(std::make_unique<BaseMoon>(0.08f, RED, 1.0f, 3.0f, 0.0f));
+        planet->AddMoon(std::make_unique<BaseMoon>(0.04f, PURPLE, 2.0f, 2.0f, 3.0f));
+
+        const auto& planet2{star->AddPlanet(std::make_unique<BasePlanet>(0.3f, BROWN, 10.0f, 2.0f, 0.0f))};
+    }
 
     // Destructor
     ~Demo() noexcept override = default;
@@ -44,30 +51,21 @@ public:
 
     void Update(const float ms) noexcept override
     {
-        _camera.Update(ms);
+        _camera->Update(ms);
 
-        _planet.Update(ms);
-        _moon.SetOrbitPathCenter(_planet.Position);
-        _moon.Update(ms);
-        _star.Update(ms);
-
-
-
+        _galaxy.Update(ms);
     }
 
     void Draw() noexcept override
     {
         BeginDrawing();
         ClearBackground(BLACK);
-        _camera.Begin();
+        _camera->Begin();
 
         DrawGrid(150, 1.6f);
+        _galaxy.Draw();
 
-        _planet.Draw();
-        _star.Draw();
-        _moon.Draw();
-
-        _camera.End();
+        _camera->End();
         EndDrawing();
     }
 

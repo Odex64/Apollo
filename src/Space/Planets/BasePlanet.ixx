@@ -6,9 +6,12 @@ export module BasePlanet;
 
 import std;
 import BaseSpace;
+import BaseMoon;
 
 export class BasePlanet : public BaseSpace {
 private:
+    std::vector<std::unique_ptr<BaseMoon>> _moons{};
+
     Vector3 _orbitPathAxis{1.0f, 0.0f, 0.0f};
     Vector3 _orbitPathCenter{0.0f, 1.0f, 0.0f};
 
@@ -44,12 +47,30 @@ public:
     // Move Assignment Operator
     BasePlanet& operator=(BasePlanet&&) noexcept = default;
 
+    [[nodiscard]]
+    const std::unique_ptr<BaseMoon>& GetMoon(const std::size_t index)
+    {
+        return _moons[index];
+    }
+
+    const std::unique_ptr<BaseMoon>& AddMoon(std::unique_ptr<BaseMoon>&& moon)
+    {
+        std::unique_ptr<BaseMoon>& emplacedMoon{_moons.emplace_back(std::move(moon))};
+        emplacedMoon->SetOrbitPathCenter(Position);
+        return emplacedMoon;
+    }
+
     void Update(const float ms) noexcept override
     {
         OrbitAngle += OrbitSpeed * ms;
 
         Position.x = OrbitRadius * std::cos(OrbitAngle);
         Position.z = OrbitRadius * std::sin(OrbitAngle);
+
+        for (const std::unique_ptr<BaseMoon>& moon : _moons)
+        {
+            moon->Update(ms);
+        }
     }
 
     void Draw() noexcept override
@@ -59,5 +80,10 @@ public:
 
         // Draw the orbit path
         DrawCircle3D(_orbitPathCenter, OrbitRadius, _orbitPathAxis, 90.0f, LIGHTGRAY);
+
+        for (const std::unique_ptr<BaseMoon>& moon : _moons)
+        {
+            moon->Draw();
+        }
     }
 };

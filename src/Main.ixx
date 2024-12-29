@@ -8,6 +8,7 @@ module;
 export module Main;
 
 import std;
+import Menu;
 import Demo;
 import Game;
 import StateManager;
@@ -23,6 +24,8 @@ export int main()
 
     Game& game{Game::GetInstance()};
     StateManager& stateManager{StateManager::GetInstance()};
+
+    // stateManager.PushState(std::make_unique<Menu>());
     stateManager.PushState(std::make_unique<Demo>());
 
     while (!WindowShouldClose())

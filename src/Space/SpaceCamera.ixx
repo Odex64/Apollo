@@ -11,8 +11,8 @@ import IUpdate;
 export class SpaceCamera final : public IUpdate {
 private:
     float _rotationSpeed{0.2f};
-    float _zoomSpeed{60.0f};
-    float _smoothZoomSpeed{5.0f};
+    float _zoomSpeed{100.0f};
+    float _smoothZoomSpeed{3.0f};
     float _zoom{20.0f};
     float _maxZoom{10.0f};
     float _minZoom{500.0f};

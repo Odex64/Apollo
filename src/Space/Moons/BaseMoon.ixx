@@ -10,7 +10,7 @@ import BaseSpace;
 export class BaseMoon : public BaseSpace {
 private:
     Vector3 _orbitPathAxis{1.0f, 0.0f, 0.0f};
-    Vector3 _orbitPathCenter{0.0f, 1.0f, 0.0f};
+    const Vector3* _orbitPathCenter{nullptr};
 
 public:
     float Radius;
@@ -22,7 +22,7 @@ public:
 
     // Constructor
     BaseMoon(const float radius, const Color& planetColor, const float orbitRadius, const float orbitSpeed,
-               const float orbitAngle) noexcept
+             const float orbitAngle) noexcept
         : Radius{radius}, PlanetColor{planetColor}, OrbitRadius{orbitRadius}, OrbitSpeed{orbitSpeed},
           OrbitAngle{orbitAngle}
     {
@@ -44,17 +44,17 @@ public:
     // Move Assignment Operator
     BaseMoon& operator=(BaseMoon&&) noexcept = default;
 
-    void SetOrbitPathCenter(const Vector3 orbit_center)
+    void SetOrbitPathCenter(const Vector3& orbitCenter)
     {
-        _orbitPathCenter = orbit_center;
+        _orbitPathCenter = &orbitCenter;
     }
 
     void Update(const float ms) noexcept override
     {
         OrbitAngle += OrbitSpeed * ms;
 
-        Position.x = _orbitPathCenter.x + OrbitRadius * std::cosf(OrbitAngle);
-        Position.z = _orbitPathCenter.z + OrbitRadius * std::sinf(OrbitAngle);
+        Position.x = _orbitPathCenter->x + OrbitRadius * std::cosf(OrbitAngle);
+        Position.z = _orbitPathCenter->z + OrbitRadius * std::sinf(OrbitAngle);
     }
 
     void Draw() noexcept override
@@ -63,6 +63,6 @@ public:
         DrawSphere(Position, Radius, PlanetColor);
 
         // Draw the orbit path
-        DrawCircle3D(_orbitPathCenter, OrbitRadius, _orbitPathAxis, 90.0f, LIGHTGRAY);
+        DrawCircle3D(*_orbitPathCenter, OrbitRadius, _orbitPathAxis, 90.0f, LIGHTGRAY);
     }
 };
