@@ -16,44 +16,6 @@ private:
     std::optional<View> _view{};
     std::vector<std::unique_ptr<BaseStar>> _stars{};
 
-    [[nodiscard]]
-    std::optional<const BaseSpace*> DetectClickedObject() const noexcept
-    {
-        const Ray ray{GetScreenToWorldRay(GetMousePosition(), _view->Camera)};
-
-        // Check each star in the galaxy
-        for (const std::unique_ptr<BaseStar>& star : GetStars())
-        {
-            // Check collision with the star
-            if (GetRayCollisionSphere(ray, star->Position, star->Radius).hit)
-            {
-                return star.get(); // Return the clicked star
-            }
-
-            // Check each planet in the star
-            for (const std::unique_ptr<BasePlanet>& planet : star->GetPlanets())
-            {
-                // Check collision with the planet
-                if (GetRayCollisionSphere(ray, planet->Position, planet->Radius).hit)
-                {
-                    return planet.get(); // Return the clicked planet
-                }
-
-                // Check each moon in the planet
-                for (const std::unique_ptr<BaseMoon>& moon : planet->GetMoons())
-                {
-                    // Check collision with the moon
-                    if (GetRayCollisionSphere(ray, moon->Position, moon->Radius).hit)
-                    {
-                        return moon.get(); // Return the clicked moon
-                    }
-                }
-            }
-        }
-
-        return std::nullopt; // No object was clicked
-    }
-
 public:
     // Constructor
     BaseGalaxy() noexcept = default;
@@ -129,5 +91,44 @@ public:
         {
             star->Draw();
         }
+    }
+
+private:
+    [[nodiscard]]
+    std::optional<const BaseSpace*> DetectClickedObject() const noexcept
+    {
+        const Ray ray{GetScreenToWorldRay(GetMousePosition(), _view->Camera)};
+
+        // Check each star in the galaxy
+        for (const std::unique_ptr<BaseStar>& star : GetStars())
+        {
+            // Check collision with the star
+            if (GetRayCollisionSphere(ray, star->Position, star->Radius).hit)
+            {
+                return star.get(); // Return the clicked star
+            }
+
+            // Check each planet in the star
+            for (const std::unique_ptr<BasePlanet>& planet : star->GetPlanets())
+            {
+                // Check collision with the planet
+                if (GetRayCollisionSphere(ray, planet->Position, planet->Radius).hit)
+                {
+                    return planet.get(); // Return the clicked planet
+                }
+
+                // Check each moon in the planet
+                for (const std::unique_ptr<BaseMoon>& moon : planet->GetMoons())
+                {
+                    // Check collision with the moon
+                    if (GetRayCollisionSphere(ray, moon->Position, moon->Radius).hit)
+                    {
+                        return moon.get(); // Return the clicked moon
+                    }
+                }
+            }
+        }
+
+        return std::nullopt; // No object was clicked
     }
 };
