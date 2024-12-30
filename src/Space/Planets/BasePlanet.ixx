@@ -11,7 +11,6 @@ import BaseMoon;
 export class BasePlanet : public BaseSpace {
 private:
     std::vector<std::unique_ptr<BaseMoon>> _moons{};
-
     Vector3 _orbitPathAxis{1.0f, 0.0f, 0.0f};
     Vector3 _orbitPathCenter{0.0f, 1.0f, 0.0f};
 
@@ -21,7 +20,6 @@ public:
     float OrbitRadius;
     float OrbitSpeed;
     float OrbitAngle;
-    Vector3 Position{};
 
     // Constructor
     BasePlanet(const float radius, const Color& planetColor, const float orbitRadius, const float orbitSpeed,
@@ -29,7 +27,6 @@ public:
         : Radius{radius}, PlanetColor{planetColor}, OrbitRadius{orbitRadius}, OrbitSpeed{orbitSpeed},
           OrbitAngle{orbitAngle}
     {
-        Position.y = 1.0f;
     }
 
     // Destructor
@@ -48,12 +45,18 @@ public:
     BasePlanet& operator=(BasePlanet&&) noexcept = default;
 
     [[nodiscard]]
-    const std::unique_ptr<BaseMoon>& GetMoon(const std::size_t index)
+    const std::unique_ptr<BaseMoon>& operator[](const std::size_t index) const noexcept
     {
         return _moons[index];
     }
 
-    const std::unique_ptr<BaseMoon>& AddMoon(std::unique_ptr<BaseMoon>&& moon)
+    [[nodiscard]]
+    const std::vector<std::unique_ptr<BaseMoon>>& GetMoons() const noexcept
+    {
+        return _moons;
+    }
+
+    const std::unique_ptr<BaseMoon>& AddMoon(std::unique_ptr<BaseMoon>&& moon) noexcept
     {
         std::unique_ptr<BaseMoon>& emplacedMoon{_moons.emplace_back(std::move(moon))};
         emplacedMoon->SetOrbitPathCenter(Position);

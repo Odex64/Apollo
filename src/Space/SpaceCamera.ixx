@@ -3,12 +3,12 @@ module;
 #include "raylib.h"
 #include "raymath.h"
 
-export module SpaceCamera;
+export module View;
 
 import std;
 import IUpdate;
 
-export class SpaceCamera final : public IUpdate {
+export class View final : public IUpdate {
 private:
     float _rotationSpeed{0.2f};
     float _zoomSpeed{100.0f};
@@ -18,40 +18,35 @@ private:
     float _minZoom{500.0f};
     const Vector3* _target;
     float _targetZoom{_zoom};
-    Camera3D _camera = {{0.0f, 10.0f, 20.0f}, *_target, {0.0f, 1.0f, 0.0f}, 45.0f, CAMERA_PERSPECTIVE};
 
 public:
+    Camera3D Camera = {{0.0f, 10.0f, 20.0f}, *_target, {0.0f, 1.0f, 0.0f}, 45.0f, CAMERA_PERSPECTIVE};
     float Yaw{};
     float Pitch{0.6f};
 
     // Constructor
-    explicit SpaceCamera(const Vector3& target) noexcept : _target{&target}
+    explicit View(const Vector3& target) noexcept : _target{&target}
     {
     }
 
     // Destructor
-    ~SpaceCamera() noexcept override = default;
+    ~View() noexcept override = default;
 
     // Copy Constructor
-    SpaceCamera(const SpaceCamera&) noexcept = default;
+    View(const View&) noexcept = default;
 
     // Copy Assignment Operator
-    SpaceCamera& operator=(const SpaceCamera&) noexcept = default;
+    View& operator=(const View&) noexcept = default;
 
     // Move Constructor
-    SpaceCamera(SpaceCamera&&) noexcept = default;
+    View(View&&) noexcept = default;
 
     // Move Assignment Operator
-    SpaceCamera& operator=(SpaceCamera&&) noexcept = default;
+    View& operator=(View&&) noexcept = default;
 
-    void Begin() const noexcept
+    void SetTarget(const Vector3& target) noexcept
     {
-        BeginMode3D(_camera);
-    }
-
-    void End() const noexcept
-    {
-        EndMode3D();
+        _target = &target;
     }
 
     void Update(const float ms) noexcept override
@@ -85,11 +80,11 @@ public:
         _zoom = Lerp(_zoom, _targetZoom, _smoothZoomSpeed * ms);
 
         // Recalculate the camera's position in spherical coordinates
-        _camera.position.x = _target->x + _zoom * std::cos(Yaw) * std::cos(Pitch);
-        _camera.position.y = _target->y + _zoom * std::sin(Pitch);
-        _camera.position.z = _target->z + _zoom * std::sin(Yaw) * std::cos(Pitch);
+        Camera.position.x = _target->x + _zoom * std::cos(Yaw) * std::cos(Pitch);
+        Camera.position.y = _target->y + _zoom * std::sin(Pitch);
+        Camera.position.z = _target->z + _zoom * std::sin(Yaw) * std::cos(Pitch);
 
         // Keep the camera pointed at the target
-        _camera.target = *_target;
+        Camera.target = *_target;
     }
 };

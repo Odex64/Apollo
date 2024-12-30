@@ -18,7 +18,6 @@ public:
     float OrbitRadius;
     float OrbitSpeed;
     float OrbitAngle;
-    Vector3 Position{};
 
     // Constructor
     BaseMoon(const float radius, const Color& planetColor, const float orbitRadius, const float orbitSpeed,
@@ -26,7 +25,6 @@ public:
         : Radius{radius}, PlanetColor{planetColor}, OrbitRadius{orbitRadius}, OrbitSpeed{orbitSpeed},
           OrbitAngle{orbitAngle}
     {
-        Position.y = 1.0f;
     }
 
     // Destructor
@@ -44,7 +42,7 @@ public:
     // Move Assignment Operator
     BaseMoon& operator=(BaseMoon&&) noexcept = default;
 
-    void SetOrbitPathCenter(const Vector3& orbitCenter)
+    void SetOrbitPathCenter(const Vector3& orbitCenter) noexcept
     {
         _orbitPathCenter = &orbitCenter;
     }

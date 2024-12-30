@@ -10,13 +10,10 @@ import BaseMoon;
 import BaseGalaxy;
 import BasePlanet;
 import BaseStar;
-import SpaceCamera;
-import BaseSpace;
 
 export class Demo final : public IState {
 private:
     BaseGalaxy _galaxy{};
-    std::optional<SpaceCamera> _camera{};
 
 public:
     // Constructor
@@ -27,7 +24,8 @@ public:
         const auto& planet{star->AddPlanet(std::make_unique<BasePlanet>(0.3f, BLUE, 6.0f, 1.0f, 0.0f))};
         planet->AddMoon(std::make_unique<BaseMoon>(0.08f, RED, 1.0f, 3.0f, 0.0f));
         planet->AddMoon(std::make_unique<BaseMoon>(0.04f, PURPLE, 2.0f, 2.0f, 3.0f));
-        _camera.emplace(planet->Position);
+
+        _galaxy.SetView(*planet);
 
         const auto& planet2{star->AddPlanet(std::make_unique<BasePlanet>(0.3f, BROWN, 10.0f, 2.0f, 0.0f))};
     }
@@ -49,8 +47,6 @@ public:
 
     void Update(const float ms) noexcept override
     {
-        _camera->Update(ms);
-
         _galaxy.Update(ms);
     }
 
@@ -58,12 +54,13 @@ public:
     {
         BeginDrawing();
         ClearBackground(BLACK);
-        _camera->Begin();
+
+        _galaxy.BeginView();
 
         DrawGrid(150, 1.6f);
         _galaxy.Draw();
 
-        _camera->End();
+        _galaxy.EndView();
         EndDrawing();
     }
 

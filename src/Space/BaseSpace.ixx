@@ -1,3 +1,7 @@
+module;
+
+#include "raylib.h"
+
 export module BaseSpace;
 
 import IUpdate;
@@ -5,6 +9,8 @@ import IDraw;
 
 export class BaseSpace : public IUpdate, public IDraw {
 public:
+    Vector3 Position{0.0f, 1.0f, 0.0f};
+
     // Constructor
     BaseSpace() noexcept = default;
 

@@ -13,14 +13,12 @@ private:
     std::vector<std::unique_ptr<BasePlanet>> _planets{};
 
 public:
-    Vector3 Position{};
     float Radius;
     Color StarColor;
 
     // Constructor
     BaseStar(const float radius, const Color& starColor) noexcept : Radius{radius}, StarColor{starColor}
     {
-        Position.y = 1.0f;
     }
 
     // Destructor
@@ -39,9 +37,15 @@ public:
     BaseStar& operator=(BaseStar&&) noexcept = default;
 
     [[nodiscard]]
-    const std::unique_ptr<BasePlanet>& GetPlanet(const std::size_t index)
+    const std::unique_ptr<BasePlanet>& operator[](const std::size_t index) const noexcept
     {
         return _planets[index];
+    }
+
+    [[nodiscard]]
+    const std::vector<std::unique_ptr<BasePlanet>>& GetPlanets() const noexcept
+    {
+        return _planets;
     }
 
     [[nodiscard]]
